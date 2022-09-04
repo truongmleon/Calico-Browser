@@ -1,0 +1,22 @@
+{
+  "name": "pokemonspritedexapi",
+  "version": "1.0.0",
+  "description": "An API from my Spritedex project",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/truongmleon/PokemonSpritedexAPI.git"
+  },
+  "author": "Leon Truong",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/truongmleon/PokemonSpritedexAPI/issues"
+  },
+  "homepage": "https://github.com/truongmleon/PokemonSpritedexAPI",
+  "devDependencies": {
+    "express": "^4.18.1",
+    "nodemon": "^2.0.19"
+  }
+}
