@@ -1,11 +1,13 @@
-import express from "express";
+import express from 'express';
 
 const app = express();
 
+
 app.get('/api/v1', (req, res) => {
-    res.send({"Generation One:": "/api/v1/GenerationOne"})
+    const data = [
+        {GenerationOne: "http://localhost:4000/api/v1/GenerationOne"}
+    ]
+    res.json(data);
 });
 
-app.get("*")
-
-app.listen(3000)
+app.listen(4000);
