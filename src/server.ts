@@ -1,24 +1,34 @@
 import express from 'express';
+import redblue from './routes/genOne/redblue';
 
 const app = express();
 
+app.use("/RedBlue", redblue);
+
 app.get("/api/v1", (req, res) => {
     const data = {
-        GenerationOne: "http://localhost:4000/api/v1/GenerationOne",
-        GenerationTwo: "http://localhost:4000/api/v1/GenerationTwo",
-        GenerationThree: "http://localhost:4000/api/v1/GenerationThree",
-        GenerationFour: "http://localhost:4000/api/v1/GenerationFour",
-        GenerationFive: "http://localhost:4000/api/v1/GenerationFive",
-        GenerationSix: "http://localhost:4000/api/v1/GenerationSix",
-        GenerationSeven: "http://localhost:4000/api/v1/GenerationSeven",
-        GenerationEight: "http://localhost:4000/api/v1/GenerationEight",
+        PokémonEnglishNames: "http://localhost:4000/api/v1/en",
+        PokémonJapaneseNames: "http://localhost:4000/api/v1/jp",
+        PokémonIDs: "http://localhost:4000/api/v1/ids",
+        GenerationOneSprites: "http://localhost:4000/api/v1/GenerationOne",
+        GenerationTwoSprites: "http://localhost:4000/api/v1/GenerationTwo",
+        GenerationThreeSprites: "http://localhost:4000/api/v1/GenerationThree",
+        GenerationFourSprites: "http://localhost:4000/api/v1/GenerationFour",
+        GenerationFiveSprites: "http://localhost:4000/api/v1/GenerationFive",
+        GenerationSixSprites: "http://localhost:4000/api/v1/GenerationSix",
+        GenerationSevenSprites: "http://localhost:4000/api/v1/GenerationSeven",
+        GenerationEightSprites: "http://localhost:4000/api/v1/GenerationEight",
     }
     res.json(data);
 });
 
 app.get("/api/v1/GenerationOne", (req, res) => {
     const data = {
-
+        PokémonRedBlue: "http://localhost:4000/api/v1/GenerationOne/RedBlue",
+        PokémonGreen: "http://localhost:4000/api/v1/GenerationOneGreen",
+        PokémonYellow: "http://localhost:4000/api/v1/GenerationOne/Yellow",
+        TrainerNames: "http://localhost:4000/api/v1/GenerationOne/TrainerNames",
+        TrainerSprites: "http://localhost:4000/api/v1/GenerationOne/TrainerSprites",
     }
 });
 
