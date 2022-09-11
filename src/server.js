@@ -2,6 +2,7 @@ import express from 'express';
 import redblue from './routes/genOne/redblue.js';
 const app = express();
 app.use("/RedBlue", redblue);
+
 app.get("/api/v1", (req, res) => {
     const data = {
         PokémonEnglishNames: "http://localhost:4000/api/v1/en",
