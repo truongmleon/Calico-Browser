@@ -4,7 +4,7 @@
   "description": "An API from my Spritedex project",
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/server.js",
+    "dev": "nodemon ./src/server.js",
     "build": "tsc --build"
   },
   "repository": {
