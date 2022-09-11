@@ -2,7 +2,6 @@ import express from 'express';
 
 const app = express();
 
-
 app.get("/api/v1", (req, res) => {
     const data = {
         GenerationOne: "http://localhost:4000/api/v1/GenerationOne",
@@ -18,7 +17,9 @@ app.get("/api/v1", (req, res) => {
 });
 
 app.get("/api/v1/GenerationOne", (req, res) => {
+    const data = {
 
+    }
 });
 
 app.get("/api/v1/GenerationTwo", (req, res) => {
