@@ -1,8 +1,10 @@
 import express from 'express';
-import redblue from './routes/genOne/redblue.js';
+import redblue from './routes/genOne/redblue';
 const app = express();
 app.use("/RedBlue", redblue);
-
+app.get('/', (req, res) => {
+    res.redirect("https://www.google.com");
+});
 app.get("/api/v1", (req, res) => {
     const data = {
         PokémonEnglishNames: "http://localhost:4000/api/v1/en",
