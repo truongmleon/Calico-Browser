@@ -2,7 +2,6 @@ import express from 'express';
 import redblue from './routes/genOne/redblue';
 //import yellow from './routes/genOne/yellow';
 
-
 const app = express();
 
 app.use("/RedBlue", redblue);
