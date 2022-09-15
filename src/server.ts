@@ -1,14 +1,21 @@
 import express from 'express';
 import redblue from './routes/genOne/redblue';
-//import yellow from './routes/genOne/yellow';
+import green from './routes/genOne/green';
+import yellow from './routes/genOne/yellow';
+import trainerNames from './routes/genOne/trainerNames';
+import trainerSprites from './routes/genOne/trainerSprites';
 
 const app = express();
 
 app.use("/RedBlue", redblue);
+app.use("/Green", green);
+app.use("/Yellow", yellow);
+app.use("/trainerNames", trainerNames);
+app.use("/trainerSprites", trainerSprites);
 
 app.get('/', (req, res) => {
     res.redirect("https://www.google.com")
-})
+});
 
 app.get("/api/v1", (req, res) => {
     const data = {
