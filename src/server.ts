@@ -15,7 +15,7 @@ app.use("/trainerNames", trainerNames);
 app.use("/trainerSprites", trainerSprites);
 
 app.get('/', (req, res) => {
-    res.redirect("https://www.google.com")
+    res.redirect("https://www.google.com");
 });
 
 app.get("/api/v1", (req, res) => {
