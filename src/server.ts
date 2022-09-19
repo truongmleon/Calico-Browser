@@ -1,18 +1,16 @@
 import express from 'express';
 
-import redblue from './routes/genOne/redblue';
-import green from './routes/genOne/green';
-import yellow from './routes/genOne/yellow';
-import trainerNames from './routes/genOne/trainerNames';
-import trainerSprites from './routes/genOne/trainerSprites';
+import redblue from './routes/genOne/redblue.js';
+import green from './routes/genOne/green.js';
+import yellow from './routes/genOne/yellow.js';
+import trainers from './routes/genOne/trainers.js';
 
 const app = express();
 
 app.use("/RedBlue", redblue);
 app.use("/Green", green);
 app.use("/Yellow", yellow);
-app.use("/trainerNames", trainerNames);
-app.use("/trainerSprites", trainerSprites);
+app.use("/Trainers", trainers);
 
 app.get('/', (req, res) => {
     res.redirect("https://www.google.com");
@@ -32,6 +30,7 @@ app.get("/api/v1", (req, res) => {
         GenerationSevenSprites: "http://localhost:4000/api/v1/GenerationSeven",
         GenerationEightSprites: "http://localhost:4000/api/v1/GenerationEight",
     }
+
     res.json(data);
 });
 
@@ -43,6 +42,8 @@ app.get("/api/v1/GenerationOne", (req, res) => {
         TrainerNames: "http://localhost:4000/api/v1/GenerationOne/TrainerNames",
         TrainerSprites: "http://localhost:4000/api/v1/GenerationOne/TrainerSprites",
     }
+
+    res.json(data);
 });
 
 app.get("/api/v1/GenerationTwo", (req, res) => {
