@@ -5,7 +5,7 @@ const router = express.Router();
 router.get('/', (req, res) => {
     res.send({
         "Blubasaur": {
-            "eng": "Blubasaur",
+            "eng": "Blubasaur", 
             "jp": "フシギダネ - Fushigidane",
             "id": "#001",
             "image": "data/images/Generation One/Red:blue/1.png"
