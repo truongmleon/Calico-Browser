@@ -1,9 +1,7 @@
 import express from 'express';
 
-const router = express.Router();
+export const yellow = express.Router();
 
-router.get('/', (req, res) => {
+yellow.get('/', (req, res) => {
     
 });
-
-export default router;

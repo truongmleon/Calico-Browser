@@ -1,13 +1,13 @@
 import express from 'express';
 import { redblue } from './routes/genOne/redblue.js';
-import green from './routes/genOne/green.js';
-import yellow from './routes/genOne/yellow.js';
-import trainers from './routes/genOne/trainers.js';
+import { green } from './routes/genOne/green.js';
+import { yellow } from './routes/genOne/yellow.js';
+import { trainers } from './routes/genOne/trainers.js';
 const app = express();
-app.use("/RedBlue", redblue);
-app.use("/Green", green);
-app.use("/Yellow", yellow);
-app.use("/Trainers", trainers);
+app.use("/api/v1/GenerationOne/RedBlue", redblue);
+app.use("/api/v1/GenerationOne/Green", green);
+app.use("/api/v1/GenerationOne/Yellow", yellow);
+app.use("/api/v1/GenerationOne/Trainers", trainers);
 app.get('/', (req, res) => {
     res.redirect("https://www.google.com");
 });

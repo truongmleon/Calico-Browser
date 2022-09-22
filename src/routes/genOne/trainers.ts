@@ -1,9 +1,8 @@
 import express from 'express';
 
-const router = express.Router();
+export const trainers = express.Router();
 
-router.get('/', (req, res) => {
+trainers.get('/', (req, res) => {
     
 });
 
-export default router;

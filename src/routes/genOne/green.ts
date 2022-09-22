@@ -1,10 +1,8 @@
 import express from 'express';
 import { request } from 'http';
 
-const router = express.Router();
+export const green = express.Router();
 
-router.get('/', (req, res) => {
+green.get('/', (req, res) => {
     
 });
-
-export default router;
