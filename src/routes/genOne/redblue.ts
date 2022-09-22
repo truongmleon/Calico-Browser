@@ -1,11 +1,11 @@
 import express from 'express';
 
-const router = express.Router();
+export const redblue = express.Router();
 
-router.get('/', (req, res) => {
+redblue.get('/', (req, res) => {
     res.send({
         "Blubasaur": {
-            "eng": "Blubasaur",  
+            "eng": "Blubasaur",
             "jp": "フシギダネ - Fushigidane",
             "id": "#001",
             "image": "data/images/Generation One/Red:blue/1.png"
@@ -912,5 +912,3 @@ router.get('/', (req, res) => {
           }
     })
 });
-
-export default router;
