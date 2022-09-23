@@ -18,7 +18,7 @@ app.get('/', (req, res) => {
 
 app.get("/api/v1", (req, res) => {
     const data = {
-        GeneralInfo: "",
+        GeneralInfo: "http://localhost:4000/api/v1/GeneralInfo",
         GenerationOneSprites: "http://localhost:4000/api/v1/GenerationOne",
         GenerationTwoSprites: "http://localhost:4000/api/v1/GenerationTwo",
         GenerationThreeSprites: "http://localhost:4000/api/v1/GenerationThree",
