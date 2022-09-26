@@ -1,9 +1,9 @@
 import express from 'express';
 
-import { redblue } from './routes/genOne/redblue.js';
-import { green }  from './routes/genOne/green.js';
-import { yellow } from './routes/genOne/yellow.js';
-import { trainers } from './routes/genOne/trainers.js';
+import { redblue } from './routes/genOne/frontSprites/redblue.js';
+import { green }  from './routes/genOne/frontSprites/green.js';
+import { yellow } from './routes/genOne/frontSprites/yellow.js';
+import { trainers } from './routes/genOne/frontSprites/trainers.js';
 
 const app = express();
 
