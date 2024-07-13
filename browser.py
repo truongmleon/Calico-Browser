@@ -1,7 +1,7 @@
 """
 TODO:
 1-3
-1-6
+FIX 1-6
 1-9
 """
 
@@ -17,6 +17,8 @@ class URL:
         host: Website host name.
         port: Port 443 and 80 for https and http requests (no ports for others).
     """
+    
+    cache = {}
     
     def __init__(self, url):
         """Stores the URL given into different pieces.
@@ -66,7 +68,6 @@ class URL:
             self.view_source()
         else:
             if (self.host + str(self.port) not in self.connection.keys()):
-                print(self.connection)
                 self.request_new_website()
             else:
                 self.get_website()
@@ -74,6 +75,7 @@ class URL:
     def request_new_website(self):
         """If the socket for this specific website
         hasn't be established, create one.
+        Needs fixing for keep-alive connection header.
         """
         
         # Used to send info back and forth.
@@ -88,18 +90,13 @@ class URL:
         
         s.connect((self.host, self.port))
         
-        #make connection closed if faileds
         headers = {
             "Host": f"{self.host}",
             "Connection": "close",
+            "Cache-Control": "max-age=9001",
             "User-Agent": "pie"
         }
         
-        # Unsure why the connection is closed for this. 
-        #if (self.scheme.find("view-source:http") != -1):
-        #    headers["Connection"] = "close"
-        
-        # Process of writing Telenet-like commands.
         get_request = StringIO()
         get_request.write(f"GET {self.path} HTTP/1.1\r\n")
         
@@ -109,7 +106,6 @@ class URL:
         
         s.send(get_request.getvalue().encode("utf8"))
         self.connection[self.host + str(self.port)] = s
-        print(self.connection)
         self.get_website()
         
     def get_website(self):
@@ -117,32 +113,41 @@ class URL:
         from the web, this function handles that.
         """
         
+        control_cache = False
         s = self.connection[self.host + str(self.port)]
-        response = s.makefile("r", encoding = "utf-8", newline = "\r\n")
-        statusline = response.readline()
-        version, status, explanation = statusline.split(" ", 2)
-        status = int(status) // 100
         
-        headers_result = {}
-        
-        while (line := response.readline()) != "\r\n": #after is HTML
-            header, value = line.split(":", 1)
-            headers_result[header.casefold()] = value.strip()
-            
-            if (status == 2 and header == "Content-Length"):
-                content_length = int(value)
-            
-            if (status == 3 and header == "Location"):
-                # Sometimes redirects may not have the scheme just yet.
-                if (headers_result[header.casefold()].find("http") == -1):
-                    headers_result[header.casefold()] = self.scheme + "://" + self.host + headers_result[header.casefold()]
-                main.load(URL(headers_result[header.casefold()]))
-                return
+        if (self.host + str(self.port) in self.cache.keys()):
+            response = self.cache[self.host + str(self.port)]
+        else:
+            response = s.makefile("r", encoding = "utf-8", newline = "\r\n")
 
-        assert "transfer-encoding" not in headers_result
-        assert "content-encoding" not in headers_result
+            statusline = response.readline()
+            
+            version, status, explanation = statusline.split(" ", 2)
+            status = int(status) // 100
+            
+            headers_result = {}
+            
+            while (line := response.readline()) != "\r\n": #after is HTML
+                header, value = line.split(":", 1)
+                headers_result[header.casefold()] = value.strip()
+                
+                #if (status == 2 and header == "Content-Length"):
+                #   content_length = int(value)
+                
+                if (status == 2 and header == "Cache-Control" and value.strip() != "no-store"):
+                    control_cache = True
+                if (status == 3 and header == "Location"):
+                    # Sometimes redirects may not have the scheme just yet.
+                    if (headers_result[header.casefold()].find("http") == -1):
+                        headers_result[header.casefold()] = self.scheme + "://" + self.host + headers_result[header.casefold()]
+                    main.load(URL(headers_result[header.casefold()]))
+                    return
         
-        if (content_length != None and self.scheme.find("view-source") != 0):
+        if (control_cache):
+            self.cache[self.host + str(self.port)] = response
+        
+        if (self.scheme.find("view-source") != 0):
             # fast but doesnt print all
             # response = s.recv(content_length).decode('utf-8')
             main.show(response.read())

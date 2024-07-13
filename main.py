@@ -51,7 +51,7 @@ if __name__ == "__main__":
     if (len(sys.argv) > 1):
         load(URL(sys.argv[1]))
     else:
-        load(URL("http://example.org"))
-        load(URL("http://example.org"))
+        #load(URL("http://example.org"))
+        #load(URL("http://example.org"))
         
-        #load(URL(f"file://{getcwd()}/index.html"))
+        load(URL(f"file://{getcwd()}/index.html"))
