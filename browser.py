@@ -3,7 +3,22 @@ from os import getcwd
 from io import StringIO  
 
 class URL:
+    """A browser.
+    
+    Attributes:
+        connection: Connection dictionary to store different sockets so they created won't be created again.
+        scheme: URL scheme (text before ://).
+        host: Website host name.
+        port: Port 443 and 80 for https and http requests (no ports for others).
+    """
+    
     def __init__(self, url):
+        """Stores the URL given into different pieces.
+
+        Args:
+            url (string): URL given
+        """
+        
         self.connection = {}
         self.scheme, url = url.split("://", 1)
         if (self.scheme.find("view-source") == -1): 
@@ -30,6 +45,10 @@ class URL:
             self.port = int(port)
                     
     def request(self):
+        """Given the scheme, this function calls 
+        the another function respective to the scheme.
+        """
+        
         if (self.scheme == "file"):
             show(open(self.host))
         elif (self.scheme.find("view-source") == 0):
@@ -41,6 +60,10 @@ class URL:
                 self.get_website()
     
     def request_new_website(self):
+        """If the socket for this specific website
+        hasn't be established, create one.
+        """
+        
         s = socket.socket( #used to send info back and forth
             family = socket.AF_INET,
             type = socket.SOCK_STREAM,
@@ -70,6 +93,10 @@ class URL:
         self.get_website()
         
     def get_website(self):
+        """For schemes build on gathering a website 
+        from the web, this function handles that.
+        """
+        
         s = self.connection[self.host + str(self.port)]
         response = s.makefile("r", encoding = "utf-8", newline = "\r\n")
         statusline = response.readline()
@@ -97,6 +124,9 @@ class URL:
             show(response)
     
     def view_source(self):
+        """For schemes that want to see the source HTML.
+        """
+        
         if (self.scheme.find("file") > -1):
             print(self.host)
             self.response = open(self.host)
@@ -109,6 +139,12 @@ class URL:
                 print(c, end = "")
     
 def show(content):
+    """Renderer for HTML.
+
+    Args:
+        content (file): HTML file of the website.
+    """
+    
     in_tag = False
     current = 3
     
@@ -139,6 +175,12 @@ def show(content):
         print()
             
 def load(url):
+    """Calls URL.request to start processing.
+
+    Args:
+        url (URL): URL object to load a specific url.
+    """
+    
     url.request()
     
 if __name__ == "__main__":
