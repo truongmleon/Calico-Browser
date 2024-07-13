@@ -1,5 +1,11 @@
-import socket, ssl, sys
-from os import getcwd
+"""
+TODO:
+1-3
+1-6
+1-9
+"""
+
+import socket, ssl, main
 from io import StringIO  
 
 class URL:
@@ -31,10 +37,12 @@ class URL:
         
         if "/" not in url:
             url += "/"
-            
-        if (self.scheme != "file" and self.scheme != "view-source:file"):
-            self.host, url = url.split("/", 1) #grabs only the first slash
+        
+        # Files have many slashes.
+        if (self.scheme.find("file") == -1):
+            self.host, url = url.split("/", 1)
         else:
+            #If it is a file scheme, just put the entire path as the host.
             self.host = url
             
         self.path = "/" + url
@@ -47,15 +55,18 @@ class URL:
                     
     def request(self):
         """Given the scheme, this function calls 
-        the another function respective to the scheme.
+        another function respective to the scheme.
         """
         
+        # We don't need to request information online about 
+        # the file stored in our computer.
         if (self.scheme == "file"):
-            show(open(self.host))
+            main.show(open(self.host).read())
         elif (self.scheme.find("view-source") == 0):
             self.view_source()
         else:
-            if (self.host + str(self.port) not in self.connection):
+            if (self.host + str(self.port) not in self.connection.keys()):
+                print(self.connection)
                 self.request_new_website()
             else:
                 self.get_website()
@@ -77,11 +88,16 @@ class URL:
         
         s.connect((self.host, self.port))
         
+        #make connection closed if faileds
         headers = {
             "Host": f"{self.host}",
             "Connection": "close",
             "User-Agent": "pie"
         }
+        
+        # Unsure why the connection is closed for this. 
+        #if (self.scheme.find("view-source:http") != -1):
+        #    headers["Connection"] = "close"
         
         # Process of writing Telenet-like commands.
         get_request = StringIO()
@@ -93,6 +109,7 @@ class URL:
         
         s.send(get_request.getvalue().encode("utf8"))
         self.connection[self.host + str(self.port)] = s
+        print(self.connection)
         self.get_website()
         
     def get_website(self):
@@ -112,20 +129,25 @@ class URL:
             header, value = line.split(":", 1)
             headers_result[header.casefold()] = value.strip()
             
+            if (status == 2 and header == "Content-Length"):
+                content_length = int(value)
+            
             if (status == 3 and header == "Location"):
                 # Sometimes redirects may not have the scheme just yet.
                 if (headers_result[header.casefold()].find("http") == -1):
                     headers_result[header.casefold()] = self.scheme + "://" + self.host + headers_result[header.casefold()]
-                load(URL(headers_result[header.casefold()]))
-                return 
-            
+                main.load(URL(headers_result[header.casefold()]))
+                return
+
         assert "transfer-encoding" not in headers_result
         assert "content-encoding" not in headers_result
         
-        if (self.scheme.find("view-source") == 0):
-            self.response = response
+        if (content_length != None and self.scheme.find("view-source") != 0):
+            # fast but doesnt print all
+            # response = s.recv(content_length).decode('utf-8')
+            main.show(response.read())
         else:
-            show(response)
+            self.response = response.read()
     
     def view_source(self):
         """For schemes that want to see the source HTML.
@@ -139,54 +161,3 @@ class URL:
         for line in self.response:
             for c in line:
                 print(c, end = "")
-    
-def show(content):
-    """Renderer for HTML.
-
-    Args:
-        content (file): HTML file of the website.
-    """
-    
-    in_tag = False
-    current = 3
-    
-    for line in content.read().splitlines():
-        index_less = line.find("&lt;")  
-        index_greater = line.find("&gt;")
-        count = -1;
-        
-        for c in line:
-            count += 1
-            if (current < 3):
-                current += 1
-                continue
-            if c == "<" and index_less != count:
-                in_tag = True
-            elif c == ">" and index_greater != count:
-                in_tag = False
-            elif not in_tag:
-                if (count == index_less):
-                    print("<", end = "")
-                    current = 0
-                elif (count == index_greater):
-                    print(">", end = "")
-                    current = 0
-                else:
-                    print(c, end = "") # no new line
-                
-        print()
-            
-def load(url):
-    """Calls URL.request to start processing.
-
-    Args:
-        url (URL): URL object to load a specific url.
-    """
-    
-    url.request()
-    
-if __name__ == "__main__":
-    if (len(sys.argv) > 1):
-        load(URL(sys.argv[1]))
-    else:
-        load(URL(f"file://{getcwd()}/index.html"))
