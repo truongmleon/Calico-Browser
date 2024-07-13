@@ -39,7 +39,8 @@ class URL:
             
         self.path = "/" + url
         
-        #Change ports if necessary
+        # Change ports if necessary.
+        # Ex. localhost:8000
         if ":" in self.host and self.scheme != "file":
             self.host, port = self.host.split(":", 1)
             self.port = int(port)
@@ -64,12 +65,13 @@ class URL:
         hasn't be established, create one.
         """
         
-        s = socket.socket( #used to send info back and forth
+        # Used to send info back and forth.
+        s = socket.socket( 
             family = socket.AF_INET,
             type = socket.SOCK_STREAM,
             proto = socket.IPPROTO_TCP
         )
-        if (self.scheme.find("https") > -1):
+        if (self.scheme.find("https") != -1):
             ctx = ssl.create_default_context()
             s = ctx.wrap_socket(s, server_hostname = self.host)
         
@@ -81,6 +83,7 @@ class URL:
             "User-Agent": "pie"
         }
         
+        # Process of writing Telenet-like commands.
         get_request = StringIO()
         get_request.write(f"GET {self.path} HTTP/1.1\r\n")
         
@@ -110,6 +113,7 @@ class URL:
             headers_result[header.casefold()] = value.strip()
             
             if (status == 3 and header == "Location"):
+                # Sometimes redirects may not have the scheme just yet.
                 if (headers_result[header.casefold()].find("http") == -1):
                     headers_result[header.casefold()] = self.scheme + "://" + self.host + headers_result[header.casefold()]
                 load(URL(headers_result[header.casefold()]))
@@ -128,9 +132,7 @@ class URL:
         """
         
         if (self.scheme.find("file") > -1):
-            print(self.host)
             self.response = open(self.host)
-            
         else:
             self.request_new_website()
             
