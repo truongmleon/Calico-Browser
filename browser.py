@@ -4,6 +4,8 @@ TODO:
 FIX 1-6
 1-8 CACHE TIMER
 1-9
+
+2-4 FIX SCROLL BAR HEIGHT (ch5)
 """
 
 import socket, ssl, main, tkinter as tk
@@ -84,6 +86,7 @@ class Browser:
     def load(self):
         """Uses self.layout() and self.draw() to create on screen.
         """
+        
         if (self.response == None):
             self.response = self.request()
         
@@ -125,7 +128,24 @@ class Browser:
             if (y > self.scroll + HEIGHT): continue
             if (y + VSTEP < self.scroll): continue
             
-            self.canvas.create_text(x, y - self.scroll, text=c)  
+            self.canvas.create_text(x, y - self.scroll, text=c)
+        if (HEIGHT - 500 > 30):
+            self.canvas.create_rectangle(
+                abs(WIDTH - 25), 
+                5 + self.scroll, 
+                abs(WIDTH - 5), 
+                abs(HEIGHT - 500) + self.scroll, 
+                fill="blue"
+            ) 
+        else:
+            self.canvas.create_rectangle(
+                abs(WIDTH - 25), 
+                5 + self.scroll, 
+                abs(WIDTH - 5), 
+                30 + self.scroll, 
+                fill="blue"
+            )   
+        
         
     def scrolldown(self, e):
         """Scroll down with up arrow.
