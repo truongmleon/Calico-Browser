@@ -6,8 +6,9 @@ FIX 1-6
 1-9
 """
 
-import socket, ssl, tkinter, main
+import socket, ssl, main, tkinter as tk
 from io import StringIO 
+from os import getcwd
 
 WIDTH, HEIGHT = 800, 600
 HSTEP, VSTEP = 13, 18
@@ -35,8 +36,8 @@ class Browser:
         """
 
         self.scroll = 0
-        self.window = tkinter.Tk()
-        self.canvas = tkinter.Canvas(
+        self.window = tk.Tk()
+        self.canvas = tk.Canvas(
             self.window, 
             width = WIDTH, 
             height = HEIGHT
@@ -47,7 +48,7 @@ class Browser:
         self.window.bind("<MouseWheel>", self.mousewheel)
         self.window.bind("<Configure>", self.resize)
         
-        self.canvas.pack(fill=tkinter.BOTH, expand=1)
+        self.canvas.pack(fill=tk.BOTH, expand=1)
         
         self.connection = {}
         self.scheme, url = url.split("://", 1)
@@ -168,6 +169,7 @@ class Browser:
         # We don't need to request information online about 
         # the file stored in our computer.
         if (self.scheme == "file"):
+            print(open(self.host).read())
             return open(self.host).read()
         elif (self.is_view_source):
             return self.view_source()
@@ -226,9 +228,8 @@ class Browser:
             response = self.cache[self.host + str(self.port)]
         else:
             response = s.makefile("r", encoding = "utf-8", newline = "\r\n")
-
             statusline = response.readline()
-            
+
             version, status, explanation = statusline.split(" ", 2)
             status = int(status) // 100
             
@@ -251,9 +252,7 @@ class Browser:
                     
                     if (Browser.prev != None):
                         Browser.prev.destroy()
- 
                     return
-        
         if (control_cache):
             self.cache[self.host + str(self.port)] = response
         return response.read()

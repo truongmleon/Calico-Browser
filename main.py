@@ -69,4 +69,4 @@ if __name__ == "__main__":
         Browser("https://browser.engineering/examples/xiyouji.html").load()
         #Browser(f"file://{getcwd()}/index.html").load()
 
-    tkinter.mainloop()
+    tk.mainloop()
