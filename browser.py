@@ -145,10 +145,12 @@ class Browser:
                 30 + self.scroll, 
                 fill="blue"
             )   
-        
-        
+            
     def scrolldown(self, e):
         """Scroll down with up arrow.
+        
+        Args:
+            e (event): scroll down event
         """
         
         self.scroll += SCROLL_STEP
@@ -156,6 +158,9 @@ class Browser:
         
     def scrollup(self, e):
         """Scroll up with up arrow.
+        
+        Args:
+            e (event): scroll up event
         """
         
         if (self.scroll > 0):
@@ -166,6 +171,11 @@ class Browser:
         self.draw()
         
     def mousewheel(self, e):
+        """Scroll with mouse wheel.
+
+        Args:
+            e (event): mousewheel event
+        """
         # Perhaps a toggle would work (inverse scrolling)
         # FOR MAC:
         # Scroll up -> -e.delta. Scroll down -> +e.delta
@@ -175,6 +185,11 @@ class Browser:
             self.scrolldown(e)
             
     def resize(self, e):
+        """Resizes screen based on screen dragging.s
+
+        Args:
+            e (event): event from configure handler.
+        """
         global WIDTH
         global HEIGHT
         WIDTH = e.width
