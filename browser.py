@@ -11,7 +11,7 @@ from io import StringIO
 
 WIDTH, HEIGHT = 800, 600
 HSTEP, VSTEP = 13, 18
-SCROLL_STEP = 100
+SCROLL_STEP = 50
 
 class Browser:
     """A browser.
@@ -44,6 +44,8 @@ class Browser:
         
         self.window.bind("<Down>", self.scrolldown)
         self.window.bind("<Up>", self.scrollup)
+        self.window.bind("<MouseWheel>", self.mousewheel)
+        
         self.canvas.pack()
         
         self.connection = {}
@@ -132,8 +134,21 @@ class Browser:
         """Scroll up with up arrow.
         """
         
-        self.scroll -= SCROLL_STEP
-        self.draw()         
+        if (self.scroll > 0):
+            self.scroll -= SCROLL_STEP
+            
+        if (self.scroll < 0):
+            self.scroll = 0
+        self.draw()
+        
+    def mousewheel(self, e):
+        # Perhaps a toggle would work (inverse scrolling)
+        # FOR MAC:
+        # Scroll up -> -e.delta. Scroll down -> +e.delta
+        if (e.delta < 0):
+            self.scrollup(e)    
+        elif (e.delta > 0):
+            self.scrolldown(e)
             
     def request(self):
         """Given the scheme, this function calls 
