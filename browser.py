@@ -2,14 +2,18 @@
 TODO:
 1-3
 FIX 1-6
-1-8 TIMER
+1-8 CACHE TIMER
 1-9
 """
 
-import socket, ssl, main
-from io import StringIO  
+import socket, ssl, tkinter, main
+from io import StringIO 
 
-class URL:
+WIDTH, HEIGHT = 800, 600
+HSTEP, VSTEP = 13, 18
+SCROLL_STEP = 100
+
+class Browser:
     """A browser.
     
     Attributes:
@@ -18,8 +22,9 @@ class URL:
         host: Website host name.
         port: Port 443 and 80 for https and http requests (no ports for others).
     """
-    
+
     cache = {}
+    prev = None
     
     def __init__(self, url):
         """Stores the URL given into different pieces.
@@ -27,6 +32,18 @@ class URL:
         Args:
             url (string): URL given
         """
+
+        self.scroll = 0
+        self.window = tkinter.Tk()
+        self.canvas = tkinter.Canvas(
+            self.window, 
+            width = WIDTH, 
+            height = HEIGHT
+        )
+        
+        self.window.bind("<Down>", self.scrolldown)
+        self.window.bind("<Up>", self.scrollup)
+        self.canvas.pack()
         
         self.connection = {}
         self.scheme, url = url.split("://", 1)
@@ -55,7 +72,48 @@ class URL:
         if ":" in self.host and self.scheme != "file":
             self.host, port = self.host.split(":", 1)
             self.port = int(port)
-                    
+            
+    def load(self):
+        response = self.request()
+         
+        if (response != None and self.scheme.find("view-source") == 0):
+            self.layout(main.source(response))
+            self.draw()
+        elif (response != None):
+            self.layout(main.lex(response))
+            self.draw()
+        else:
+            Browser.prev = self.window
+            self.window.withdraw()
+            
+    def layout(self, text):
+        self.display_list = []
+        cursor_x, cursor_y = HSTEP, VSTEP
+        
+        for c in text:
+            if (cursor_x >= WIDTH - HSTEP):
+                cursor_y += VSTEP
+                cursor_x = HSTEP
+            self.display_list.append((cursor_x, cursor_y, c))
+            cursor_x += HSTEP
+            
+    def draw(self):
+        self.canvas.delete("all")
+        for x, y, c in self.display_list:
+            # If y position is outside of the screen
+            if (y > self.scroll + HEIGHT): continue
+            if (y + VSTEP < self.scroll): continue
+            
+            self.canvas.create_text(x, y - self.scroll, text=c)  
+        
+    def scrolldown(self, e):
+        self.scroll += SCROLL_STEP
+        self.draw()      
+        
+    def scrollup(self, e):
+        self.scroll -= SCROLL_STEP
+        self.draw()         
+            
     def request(self):
         """Given the scheme, this function calls 
         another function respective to the scheme.
@@ -64,14 +122,14 @@ class URL:
         # We don't need to request information online about 
         # the file stored in our computer.
         if (self.scheme == "file"):
-            main.show(open(self.host).read())
+            return open(self.host).read()
         elif (self.scheme.find("view-source") == 0):
-            self.view_source()
+            return self.view_source()
         else:
             if (self.host + str(self.port) not in self.connection.keys()):
-                self.request_new_website()
+                return self.request_new_website()
             else:
-                self.get_website()
+                return self.get_website()
     
     def request_new_website(self):
         """If the socket for this specific website
@@ -107,7 +165,8 @@ class URL:
         
         s.send(get_request.getvalue().encode("utf8"))
         self.connection[self.host + str(self.port)] = s
-        self.get_website()
+        
+        return self.get_website()
         
     def get_website(self):
         """For schemes build on gathering a website 
@@ -142,28 +201,21 @@ class URL:
                     # Sometimes redirects may not have the scheme just yet.
                     if (headers_result[header.casefold()].find("http") == -1):
                         headers_result[header.casefold()] = self.scheme + "://" + self.host + headers_result[header.casefold()]
-                    main.load(URL(headers_result[header.casefold()]))
+                    Browser(headers_result[header.casefold()]).load()
+                    
+                    if (Browser.prev != None):
+                        Browser.prev.destroy()
+ 
                     return
         
         if (control_cache):
             self.cache[self.host + str(self.port)] = response
-        
-        if (self.scheme.find("view-source") != 0):
-            # fast but doesnt print all
-            # response = s.recv(content_length).decode('utf-8')
-            main.show(response.read())
-        else:
-            self.response = response.read()
+        return response.read()
     
     def view_source(self):
         """For schemes that want to see the source HTML.
         """
-        
         if (self.scheme.find("file") > -1):
-            self.response = open(self.host)
+            return open(self.host).read()
         else:
-            self.request_new_website()
-            
-        for line in self.response:
-            for c in line:
-                print(c, end = "")
+            return self.request_new_website()
