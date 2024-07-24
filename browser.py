@@ -27,7 +27,8 @@ class Browser:
     prev = None
     
     def __init__(self, url):
-        """Stores the URL given into different pieces.
+        """Stores the URL given into different pieces and 
+        create GUI for browser.
 
         Args:
             url (string): URL given
@@ -47,7 +48,9 @@ class Browser:
         
         self.connection = {}
         self.scheme, url = url.split("://", 1)
-        if (self.scheme.find("view-source") == -1): 
+        self.is_view_source = self.scheme.find("view-source") != -1
+        
+        if (not self.is_view_source): 
             assert self.scheme in [
             "http", "https", "file"], "Scheme not supported or non existent."
         if (self.scheme.find("https") > -1):
@@ -62,7 +65,7 @@ class Browser:
         if (self.scheme.find("file") == -1):
             self.host, url = url.split("/", 1)
         else:
-            #If it is a file scheme, just put the entire path as the host.
+            # If it is a file scheme, just put the entire path as the host.
             self.host = url
             
         self.path = "/" + url
@@ -74,9 +77,11 @@ class Browser:
             self.port = int(port)
             
     def load(self):
+        """Uses self.layout() and self.draw() to create on screen.
+        """
         response = self.request()
-         
-        if (response != None and self.scheme.find("view-source") == 0):
+        
+        if (response != None and self.is_view_source):
             self.layout(main.source(response))
             self.draw()
         elif (response != None):
@@ -87,10 +92,18 @@ class Browser:
             self.window.withdraw()
             
     def layout(self, text):
+        """Creation of text drawing map.
+
+        Args:
+            text (string): text to be displayed.
+        """
         self.display_list = []
         cursor_x, cursor_y = HSTEP, VSTEP
         
         for c in text:
+            if (c == "\n"):
+                cursor_y += VSTEP + 5
+                cursor_x = 0
             if (cursor_x >= WIDTH - HSTEP):
                 cursor_y += VSTEP
                 cursor_x = HSTEP
@@ -98,6 +111,8 @@ class Browser:
             cursor_x += HSTEP
             
     def draw(self):
+        """Text drawing to GUI.
+        """
         self.canvas.delete("all")
         for x, y, c in self.display_list:
             # If y position is outside of the screen
@@ -107,10 +122,16 @@ class Browser:
             self.canvas.create_text(x, y - self.scroll, text=c)  
         
     def scrolldown(self, e):
+        """Scroll down with up arrow.
+        """
+        
         self.scroll += SCROLL_STEP
         self.draw()      
         
     def scrollup(self, e):
+        """Scroll up with up arrow.
+        """
+        
         self.scroll -= SCROLL_STEP
         self.draw()         
             
@@ -123,7 +144,7 @@ class Browser:
         # the file stored in our computer.
         if (self.scheme == "file"):
             return open(self.host).read()
-        elif (self.scheme.find("view-source") == 0):
+        elif (self.is_view_source):
             return self.view_source()
         else:
             if (self.host + str(self.port) not in self.connection.keys()):

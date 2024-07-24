@@ -60,21 +60,13 @@ def source(content):
         text += "\n"
 
     return text
-            
-def load(url):
-    """Calls URL.request to start processing.
-
-    Args:
-        url (URL): URL object to load a specific url.
-    """
-    
-    url.request()
     
 if __name__ == "__main__":
     if (len(sys.argv) > 1):
         Browser(sys.argv[1]).load()
     else:
         #f"view-source:file://{getcwd()}/index.html"
-        Browser(f"file://{getcwd()}/index.html").load()
+        Browser("https://browser.engineering/examples/xiyouji.html").load()
+        #Browser(f"file://{getcwd()}/index.html").load()
 
     tkinter.mainloop()
