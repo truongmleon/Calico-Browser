@@ -45,12 +45,14 @@ class Browser:
         self.window.bind("<Down>", self.scrolldown)
         self.window.bind("<Up>", self.scrollup)
         self.window.bind("<MouseWheel>", self.mousewheel)
+        self.window.bind("<Configure>", self.resize)
         
-        self.canvas.pack()
+        self.canvas.pack(fill=tkinter.BOTH, expand=1)
         
         self.connection = {}
         self.scheme, url = url.split("://", 1)
         self.is_view_source = self.scheme.find("view-source") != -1
+        self.response = None
         
         if (not self.is_view_source): 
             assert self.scheme in [
@@ -81,13 +83,14 @@ class Browser:
     def load(self):
         """Uses self.layout() and self.draw() to create on screen.
         """
-        response = self.request()
+        if (self.response == None):
+            self.response = self.request()
         
-        if (response != None and self.is_view_source):
-            self.layout(main.source(response))
+        if (self.response != None and self.is_view_source):
+            self.layout(main.source(self.response))
             self.draw()
-        elif (response != None):
-            self.layout(main.lex(response))
+        elif (self.response != None):
+            self.layout(main.lex(self.response))
             self.draw()
         else:
             Browser.prev = self.window
@@ -149,6 +152,13 @@ class Browser:
             self.scrollup(e)    
         elif (e.delta > 0):
             self.scrolldown(e)
+            
+    def resize(self, e):
+        global WIDTH
+        global HEIGHT
+        WIDTH = e.width
+        HEIGHT = e.height
+        self.load()
             
     def request(self):
         """Given the scheme, this function calls 
